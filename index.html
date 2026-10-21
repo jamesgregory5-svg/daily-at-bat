@@ -425,32 +425,6 @@ function drawBG(moving){
   ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(BG.cv,0,0);ctx.setTransform(V.dpr,0,0,V.dpr,0,0)}
 /* ---------- figures ---------- */
 function limb(c,a,b,w){c.lineWidth=w;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
-const BK=[ // batter keyframes (feet, local: x toward plate, z up): hands, bat angle (deg, screen CCW from +x), bat length factor, front knee, back knee, shoulder, head
- {t:0, h:[-.35,4.85],a:112,l:1, fk:[.95,1.55],bk:[-.85,1.6],sh:[.15,4.75],hd:[.42,5.45],ff:[1.15,0],bf:[-1.05,0],hip:[0,3.0]},
- {t:.12,h:[-.6,4.9],a:128,l:1, fk:[1.05,1.6],bk:[-.8,1.55],sh:[.05,4.72],hd:[.38,5.42],ff:[1.35,0],bf:[-1.05,0],hip:[-.05,2.95]},
- {t:.3, h:[.85,3.65],a:-8,l:.92,fk:[1.2,1.75],bk:[-.55,1.35],sh:[.45,4.55],hd:[.62,5.3],ff:[1.35,0],bf:[-.95,.25],hip:[.2,2.9]},
- {t:.55,h:[.55,4.5],a:200,l:.62,fk:[1.15,1.8],bk:[-.4,1.4],sh:[.4,4.6],hd:[.55,5.35],ff:[1.35,0],bf:[-.85,.35],hip:[.2,2.95]},
- {t:1, h:[.2,4.85],a:215,l:.58,fk:[1.15,1.8],bk:[-.45,1.4],sh:[.35,4.65],hd:[.5,5.38],ff:[1.35,0],bf:[-.85,.35],hip:[.15,2.95]}];
-const POSE={};
-function batterPose(s,cont){let i=0;while(i<BK.length-2&&s>BK[i+1].t)i++;const A=BK[i],B=BK[i+1],t=clamp((s-A.t)/(B.t-A.t),0,1),e=t*t*(3-2*t);
-  for(const k of['h','fk','bk','sh','hd','ff','bf','hip']){POSE[k]=[lerp(A[k][0],B[k][0],e),lerp(A[k][1],B[k][1],e)]}
-  let a0=A.a,a1=B.a;POSE.a=lerp(a0,a1,e);POSE.l=lerp(A.l,B.l,e);return POSE}
-function drawBatter(c,s,aimS,T){ // s = swing phase 0..1 (0 = stance)
-  const land=V.w>V.h*1.25,base=proj(land?-2.6:-2.35,-.6,0),k=base[2]*(land?.58:.72),ox=base[0],oy=base[1];if(oy<-50)return;
-  const P=batterPose(s);const S=q=>[ox+q[0]*k,oy-q[1]*k];
-  const hip=S(P.hip),sh=S(P.sh),hd=S(P.hd),hn=S(P.h),ff=S(P.ff),bf=S(P.bf),fk=S(P.fk),bk=S(P.bk);
-  let ang=P.a*DEG,len=2.9*P.l*k;
-  if(aimS&&s>.18&&s<.42){const dx=aimS[0]-hn[0],dy=hn[1]-aimS[1],w=1-Math.abs(s-.3)/.12;const at=Math.atan2(dy,dx);ang=lerp(ang,at,clamp(w,0,1)*.8);len=lerp(len,clamp(Math.hypot(dx,dy)*1.08,k*2,k*3.3),clamp(w,0,1)*.7)}
-  const tip=[hn[0]+Math.cos(ang)*len,hn[1]-Math.sin(ang)*len];
-  c.lineCap='round';c.lineJoin='round';
-  for(let pass=0;pass<2;pass++){const ex=pass?0:k*.16;c.strokeStyle=pass?'#0b0912':T.rim;c.fillStyle=c.strokeStyle;if(!pass)c.globalAlpha=.75;
-    limb(c,bf,bk,k*.5+ex);limb(c,bk,hip,k*.58+ex);limb(c,ff,fk,k*.5+ex);limb(c,fk,hip,k*.58+ex);
-    limb(c,hip,sh,k*1.15+ex);limb(c,sh,hn,k*.36+ex);limb(c,[sh[0]+k*.3,sh[1]+k*.1],hn,k*.32+ex);
-    // bat: tapered
-    const nx=-(tip[1]-hn[1])/len,ny=(tip[0]-hn[0])/len,w0=k*.07+ex/2,w1=k*.16+ex/2;c.beginPath();c.moveTo(hn[0]+nx*w0,hn[1]+ny*w0);c.lineTo(tip[0]+nx*w1,tip[1]+ny*w1);c.lineTo(tip[0]-nx*w1,tip[1]-ny*w1);c.lineTo(hn[0]-nx*w0,hn[1]-ny*w0);c.closePath();c.fill();
-    c.beginPath();c.arc(hd[0],hd[1],k*.44+ex/2,0,TAU);c.fill();c.beginPath();c.ellipse(hd[0]+k*.3,hd[1]+k*.12,k*.36+ex/2,k*.12+ex/3,0,0,TAU);c.fill();
-    c.beginPath();c.ellipse(ff[0]+k*.15,ff[1],k*.35+ex/2,k*.13+ex/3,0,0,TAU);c.ellipse(bf[0]+k*.15,bf[1],k*.35+ex/2,k*.13+ex/3,0,0,TAU);c.fill();c.globalAlpha=1}
-}
 /* pitcher seen from the front; w = windup phase 0..1 (release at 1), f = follow-through 0..1 */
 function drawPitcher(c,w,f,hand,T){
   const base=proj(0,60.5,.8),k=base[2],ox=base[0],oy=base[1],sg=hand==='L'?-1:1;
@@ -794,9 +768,13 @@ function render(){
     const q=proj(BPx,BPy,BPz),qx=q[0],qy=q[1],r=Math.max(2.4,BR*q[2]);
     if(G.bb.kind!=='tip'){c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=Math.max(1.5,r*.8);c.lineCap='round';c.beginPath();const s0=Math.max(0,sb-.22);for(let i=0;i<=10;i++){hitPos(s0+(sb-s0)*i/10,BQ);const t=proj(BQ.x,BQ.y,BQ.z);if(i)c.lineTo(t[0],t[1]);else c.moveTo(t[0],t[1])}c.stroke()}
     c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.arc(qx,qy,r*1.9,0,TAU);c.fill();c.drawImage(ballSpr,qx-r,qy-r,r*2,r*2)}}
-  // batter (in front)
-  if(pitchCam||!h){let sp=0;if(G.swingT>=0)sp=clamp((NOW-G.swingT+60)/420,.15,1);drawBatter(c,sp,G.con&&G.con.contact&&G.swingT>=0?(()=>{const u=(G.swingT-G.tRel)/(p.T*1000);ballPos(p,clamp(u,0,mittU(p)),BQ);const q=proj(BQ.x,BQ.y,BQ.z);return[q[0],q[1]]})():aimS,T)}
-  else{const b=proj(-2.35,-.6,0);c.fillStyle='#15121d';const k=b[2];c.fillRect(b[0]-k*.6,b[1]-k*5.6,k*1.2,k*5.6)}
+  // swing feedback (no batter): a quick sweep across the zone + zone flash
+  if(G.swingT>=0&&pitchCam&&NOW-G.swingT<260&&p){const a=clamp((NOW-G.swingT)/260,0,1),hit=G.con&&G.con.contact;
+    let z=SAVE.aim==='manual'?G.pci.z:p.z;z=clamp(z,ZB-.6,ZT+.6);const L=proj(-ZX-.9,CON_Y,z),Lx=L[0],Ly=L[1],R=proj(ZX+.9,CON_Y,z),Rx=R[0],k=R[2];
+    const x=lerp(Lx,Rx,Math.min(1,a*1.6)),tail=Math.max(Lx,x-(Rx-Lx)*.7);const col=hit?'255,236,170':'255,140,140';
+    const gr=c.createLinearGradient(tail,0,x,0);gr.addColorStop(0,`rgba(${col},0)`);gr.addColorStop(1,`rgba(${col},${(.75*(1-a)).toFixed(2)})`);
+    c.fillStyle=gr;c.fillRect(tail,Ly-k*.09,x-tail,k*.18);
+    const t=proj(-ZX,CON_Y,ZT),b2=proj(ZX,CON_Y,ZB);c.strokeStyle=`rgba(${col},${(.9*(1-a)).toFixed(2)})`;c.lineWidth=3;c.strokeRect(t[0],t[1],b2[0]-t[0],b2[1]-t[1])}
   // contact flash
   if(G.con&&G.con.contact&&G.swingT>=0&&NOW-G.swingT<140&&pitchCam){const u=(G.swingT-G.tRel)/(p.T*1000);ballPos(p,clamp(u,0,mittU(p)),BQ);const q=proj(BQ.x,BQ.y,BQ.z),a=1-(NOW-G.swingT)/140;c.globalCompositeOperation='lighter';c.fillStyle=`rgba(255,230,160,${(.8*a).toFixed(2)})`;c.beginPath();c.arc(q[0],q[1],q[2]*.6*(1.5-a),0,TAU);c.fill();c.globalCompositeOperation='source-over'}
   for(const pt of PART){if(pt.life<=0)continue;c.globalAlpha=clamp(pt.life/pt.max,0,1);c.fillStyle=pt.col;c.fillRect(pt.x-pt.sz/2,pt.y-pt.sz/2,pt.sz,pt.sz)}c.globalAlpha=1;
