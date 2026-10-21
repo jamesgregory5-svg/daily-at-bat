@@ -296,7 +296,7 @@ function mixCam(a,b,t){CAM.x=lerp(a.x,b.x,t);CAM.y=lerp(a.y,b.y,t);CAM.z=lerp(a.
 /* screen layout: pitch cam puts the horizon ~30% down the play area and the plate just above the controls */
 function layoutCams(){
   const A=V.top,B=V.h-V.bot,H=B-A,W=V.w;
-  const land=W>H*1.25,yh=A+H*(land?.27:.33);let F=Math.min((land?.27:.2)*H*12.5/1.85,2.65*W);
+  const land=W>H*1.25,yh=A+H*(land?.27:.33);let F=Math.min((land?.27:.235)*H*12.5/1.85,2.65*W);
   Object.assign(CAMP,{x:0,y:-11,z:5.2,ph:0,F,cx:W/2,cy:yh});
   // hit cam: fit the fair territory + stands lip into the play area
   const port=H>W*1.05;Object.assign(CAMH,port?{x:0,y:-55,z:270,ph:50*DEG,F:1,cx:0,cy:0}:{x:0,y:-75,z:150,ph:34*DEG,F:1,cx:0,cy:0});const save={};copyCam(save,CAM);copyCam(CAM,CAMH);camPrep();
@@ -358,13 +358,13 @@ function drawScene(c){
     const pe=proj(1100*Math.sin(82*DEG),1100*Math.cos(82*DEG),0),ps=proj(1100*Math.sin(-82*DEG),1100*Math.cos(-82*DEG),0);c.lineTo(pe[0],pe[1]+4);c.lineTo(ps[0],ps[1]+4);c.closePath();c.fill();
     if(T.far==='city'){c.fillStyle=T.neon?'rgba(255,80,220,.6)':'rgba(255,230,150,.55)';for(const f of SC.far){if(f[3]<.4)continue;const a=(f[0]+f[1])/2*DEG,p=proj(1100*Math.sin(a),1100*Math.cos(a),f[2]*.6);const s=Math.max(1,p[2]*3);for(let j=0;j<3;j++)c.fillRect(p[0]-s*2+j*s*1.6,p[1]+j*s*2.2,s,s)}}}
   // stands
-  const st=[];fenceArc(st,-88,88,44,3,10);fenceArc(st,88,-88,44,120,75);c.fillStyle=T.stand;polyW(c,st);c.fill();
-  const tp=[];fenceArc(tp,-88,88,44,112,70);fenceArc(tp,88,-88,44,124,80);c.fillStyle=T.standTop;polyW(c,tp);c.fill();
-  for(const q of SC.crowd){const a=q[0],R=fence(a)+8+q[1]*100,z=12+q[1]*58,p=proj(R*Math.sin(a*DEG),R*Math.cos(a*DEG),z);const s=Math.max(1,p[2]*1.4);c.fillStyle=q[2];c.fillRect(p[0]-s/2,p[1]-s,s,s*1.2)}
+  const st=[];fenceArc(st,-88,88,44,3,10);fenceArc(st,88,-88,44,96,50);c.fillStyle=T.stand;polyW(c,st);c.fill();
+  const tp=[];fenceArc(tp,-88,88,44,90,47);fenceArc(tp,88,-88,44,100,54);c.fillStyle=T.standTop;polyW(c,tp);c.fill();
+  for(const q of SC.crowd){const a=q[0],R=fence(a)+8+q[1]*78,z=12+q[1]*34,p=proj(R*Math.sin(a*DEG),R*Math.cos(a*DEG),z);const s=Math.max(1,p[2]*1.4);c.fillStyle=q[2];c.fillRect(p[0]-s/2,p[1]-s,s,s*1.2)}
   // light towers (poles behind the stands, heads glow on top)
-  const towers=[[-16,500],[16,500],[-44,480],[44,480]];c.strokeStyle='#1a1626';
+  const towers=[[-11,500],[11,500],[-40,480],[40,480]];c.strokeStyle='#1a1626';
   for(const t of towers){const x=t[1]*Math.sin(t[0]*DEG),y=t[1]*Math.cos(t[0]*DEG);const b=proj(x,y,0),bx=b[0],by=b[1];const p=proj(x,y,62);c.lineWidth=Math.max(1.5,p[2]*3);c.beginPath();c.moveTo(bx,by);c.lineTo(p[0],p[1]);c.stroke()}
-  if(T.decor==='snowcaps'){c.strokeStyle='#ffffff';c.lineWidth=2;polyW(c,fenceArc([],-88,88,44,118,78),1);c.stroke()}
+  if(T.decor==='snowcaps'){c.strokeStyle='#ffffff';c.lineWidth=2;polyW(c,fenceArc([],-88,88,44,98,53),1);c.stroke()}
   // tower heads + glow
   c.globalCompositeOperation='lighter';
   for(const t of towers){const x=t[1]*Math.sin(t[0]*DEG),y=t[1]*Math.cos(t[0]*DEG),p=proj(x,y,64),k=p[2],w=Math.max(10,k*30),h=Math.max(6,k*18),px=p[0],py=p[1];
@@ -397,7 +397,7 @@ function drawScene(c){
   c.fillStyle=T.line;const L=330/Math.SQRT2;quadLine(c,-.2,-.2,-L,L,.2);quadLine(c,.2,-.2,L,L,.2);
   c.strokeStyle=T.line;c.lineWidth=Math.max(1,proj(0,0,0)[2]*.2);
   const pk=.78,PY=-.7,Q=(a)=>{for(let i=0;i<a.length;i+=3){a[i]*=pk;a[i+1]=PY+(a[i+1]-PY)*pk}return a};
-  c.globalAlpha=.85;for(const sx of[-1,1]){polyW(c,Q([sx*1.2,-3.6,0,sx*5.2,-3.6,0,sx*5.2,2.4,0,sx*1.2,2.4,0]));c.stroke()}c.globalAlpha=1;
+  c.globalAlpha=.45;for(const sx of[-1,1]){polyW(c,Q([sx*1.2,-3.6,0,sx*5.2,-3.6,0,sx*5.2,2.4,0,sx*1.2,2.4,0]));c.stroke()}c.globalAlpha=1;
   c.fillStyle='#fbfaf6';for(const b of[[63.6,63.6],[0,127.3],[-63.6,63.6]])polyW(c,[b[0]-.9,b[1]-.9,.15,b[0]+.9,b[1]-.9,.15,b[0]+.9,b[1]+.9,.15,b[0]-.9,b[1]+.9,.15]),c.fill();
   polyW(c,Q([-.708,0,0,.708,0,0,.708,-.708,0,0,-1.416,0,-.708,-.708,0]));c.fill();
   // wall
@@ -436,7 +436,7 @@ function batterPose(s,cont){let i=0;while(i<BK.length-2&&s>BK[i+1].t)i++;const A
   for(const k of['h','fk','bk','sh','hd','ff','bf','hip']){POSE[k]=[lerp(A[k][0],B[k][0],e),lerp(A[k][1],B[k][1],e)]}
   let a0=A.a,a1=B.a;POSE.a=lerp(a0,a1,e);POSE.l=lerp(A.l,B.l,e);return POSE}
 function drawBatter(c,s,aimS,T){ // s = swing phase 0..1 (0 = stance)
-  const base=proj(-2.35,-.6,0),k=base[2]*.72,ox=base[0],oy=base[1];if(oy<-50)return;
+  const land=V.w>V.h*1.25,base=proj(land?-2.6:-2.35,-.6,0),k=base[2]*(land?.58:.72),ox=base[0],oy=base[1];if(oy<-50)return;
   const P=batterPose(s);const S=q=>[ox+q[0]*k,oy-q[1]*k];
   const hip=S(P.hip),sh=S(P.sh),hd=S(P.hd),hn=S(P.h),ff=S(P.ff),bf=S(P.bf),fk=S(P.fk),bk=S(P.bk);
   let ang=P.a*DEG,len=2.9*P.l*k;
@@ -522,7 +522,7 @@ function startGame(mode){
     loadRec(dayRec())}
   else if(mode==='random'){G.seed='R'+Date.now().toString(36)+(Math.random()*1e6|0).toString(36);G.lineup=makeLineup(G.seed);setTheme(makeTheme(G.seed,RNG('dab-rt|'+G.seed).int(THEMES.length)))}
   else{G.seed='P';setTheme(themeForKey(TODAY));G.lineup=null;G.prac={n:0,sw:0,con:0,h:0,hr:0,ev:0}}
-  showScreen(null);$('hud').style.display='flex';$('ctrl').style.display='flex';layout();copyCam(CAM,CAMP);camPrep();
+  showScreen(null);$('hud').style.display='flex';$('ctrl').style.display='flex';G.phase='ready';G.nextAt=Infinity;updHUD();layout();copyCam(CAM,CAMP);camPrep();
   if(G.ab>=9){endGame();return}
   if(mode==='practice'){G.P=pracPitcher();toastMsg('Practice','Doesn\'t count · tap ☰ to pick pitches','',1600);G.phase='ready';G.nextAt=NOW+900;G.after=startWindup;updHUD();return}
   showCard();
@@ -719,7 +719,7 @@ function layout(){V.w=innerWidth;V.h=innerHeight;V.dpr=Math.min(window.devicePix
   V.top=play&&hud.style.display!=='none'?hud.getBoundingClientRect().bottom+4:70;V.bot=play&&ctl.style.display!=='none'?V.h-ctl.getBoundingClientRect().top+4:200;
   const cw=Math.round(V.w*V.dpr),ch=Math.round(V.h*V.dpr);if(cv.width!==cw||cv.height!==ch){cv.width=cw;cv.height=ch}
   layoutCams();if(!G.camDur||NOW-G.camT0>G.camDur){copyCam(CAM,G.phase==='hit'||(G.phase==='post'&&G.hit&&G.hit.dur)?CAMH:CAMP)}camPrep();BG.key='';tbDirty=true;
-  document.documentElement.style.setProperty('--ty',Math.round(V.top+(V.h-V.top-V.bot)*.16+24)+'px');
+  document.documentElement.style.setProperty('--ty',Math.round(V.top+(V.h-V.top-V.bot)*.16+44)+'px');
   const box=$('box');if(play&&G.phase!=='title'){box.style.display='block';box.style.bottom=(V.bot+6)+'px';const zr=CAMP.cx+CAMP.F*ZX/12.5;box.style.display=(V.w-10-box.offsetWidth<zr+12)?'none':'block'}else box.style.display='none'}
 let resizePending=0;addEventListener('resize',()=>{resizePending=performance.now()+120});
 /* ---------- input ---------- */
