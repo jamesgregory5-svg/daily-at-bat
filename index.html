@@ -28,10 +28,19 @@ button:focus:not(:focus-visible){outline:none}
 #hCnt .bb{color:#7dff9b}#hCnt .ss{color:#ff8f7a}
 #hOuts{margin-left:auto;font-size:13px;letter-spacing:2px;opacity:.9;text-align:right;line-height:1.2}
 #hBases{width:30px;height:26px;flex:0 0 auto}
-#box{position:fixed;z-index:4;right:10px;display:none;padding:7px 10px;font-size:12px;min-width:132px;pointer-events:none}
-#box h4{margin:0 0 3px;text-align:center;color:var(--acc);font-size:12px;letter-spacing:.08em}
-#box table{border-collapse:collapse;width:100%}#box td,#box th{padding:2px 4px;text-align:right}#box th{font-size:10px;opacity:.7}#box td:first-child,#box th:first-child{text-align:left}
-#box .tot td{border-top:1px solid rgba(255,255,255,.15);font-weight:800}#box .tot td:last-child{color:var(--acc)}
+#box{position:fixed;z-index:4;right:10px;display:none;padding:2px 4px;pointer-events:none}
+#npb{position:fixed;z-index:6;left:50%;top:calc(var(--ty,30%) - 60px);transform:translate(-50%,-8px);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;text-align:center;padding:7px 14px;max-width:92vw}
+#npb.on{opacity:1;transform:translate(-50%,0)}#npb small{display:block;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--rim);opacity:.85}
+#npb b{display:block;font-size:18px;font-weight:900}#npb>span{font-size:12.5px;opacity:.85;font-weight:700}#npb .pitches{margin:4px 0 0;gap:4px}#npb .pitches span{font-size:11px;padding:2px 7px}
+#recb{position:fixed;z-index:9;left:50%;top:calc(var(--ty,30%) + 70px);transform:translate(-50%,0) scale(.6);opacity:0;pointer-events:none;text-align:center;padding:10px 22px 11px;border-radius:18px;
+ background:linear-gradient(135deg,#ffd84a,#ff9a3c);color:#2a1606;box-shadow:0 8px 30px rgba(0,0,0,.45),0 0 0 3px rgba(255,255,255,.55) inset;transition:opacity .2s,transform .35s cubic-bezier(.2,1.6,.4,1)}
+#recb.on{opacity:1;transform:translate(-50%,0) scale(1)}#recb i{font-style:normal;font-size:26px;display:block;line-height:1}#recb>b{display:block;font-size:28px;font-weight:900;letter-spacing:.04em;white-space:nowrap}#recb span{display:block;font-size:14.5px;font-weight:800;white-space:nowrap;margin-top:2px}#recb span b{font-size:17px}
+.recs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;font-size:11.5px;text-align:left}
+.recs div{background:rgba(255,255,255,.06);border-radius:8px;padding:4px 8px;display:flex;justify-content:space-between;gap:6px;align-items:baseline}
+.recs span{opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.recs b{font-size:13px;white-space:nowrap}.recs .nw{background:rgba(255,200,60,.22);box-shadow:0 0 0 1px #ffd84a inset}
+.recs em{font-style:normal;font-size:9px;background:#ffd84a;color:#2a1606;border-radius:5px;padding:1px 4px;vertical-align:2px}
+.newrec{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:10px;background:linear-gradient(135deg,#ffd84a,#ff9a3c);color:#2a1606;font-weight:900}
+.palog{max-height:170px;overflow:auto;-webkit-overflow-scrolling:touch}
 #ctrl{position:fixed;left:0;right:0;bottom:0;z-index:5;display:none;flex-direction:column;align-items:center;gap:8px;padding:0 12px;padding-bottom:max(12px,env(safe-area-inset-bottom));pointer-events:none}
 #tb{width:min(520px,94vw);height:48px;display:block}
 #swing{pointer-events:auto;width:min(240px,60vw);height:clamp(64px,11.5vh,104px);border-radius:50%;font-weight:900;font-size:clamp(30px,8vw,50px);letter-spacing:.02em;color:#fff;
@@ -83,10 +92,12 @@ pre.share{background:rgba(0,0,0,.35);border-radius:12px;padding:10px;font-size:1
 <canvas id="c"></canvas>
 <div id="hud">
   <div class="r" id="r1"><div class="pn" id="hTop"><button class="ic" id="bMenu" aria-label="Menu">🎃</button><div class="ttl">DAILY AT-BAT <span id="hNum">#1</span></div><button class="ic" id="bMute" aria-label="Sound">🔊</button></div></div>
-  <div class="r"><div class="pn"><span class="gem">💎</span><div><small>At-bat</small><b id="hAB">1/9</b></div></div><div class="pn" style="flex:1.6"><div style="min-width:0"><small>Pitcher</small><b id="hP">—</b></div><span id="hPDot"></span></div></div>
-  <div class="r"><div class="pn"><div><small>Count</small><b id="hCnt">0-0</b></div><canvas id="hBases" width="68" height="60"></canvas><div id="hOuts"></div></div><div class="pn" style="flex:1.6"><div style="min-width:0"><small>Today</small><b id="hLine">0-for-0</b></div></div></div>
+  <div class="r"><div class="pn"><span class="gem">💎</span><div><small>Batter</small><b id="hAB">#1</b></div></div><div class="pn" style="flex:1.6"><div style="min-width:0"><small id="hPn">Pitcher</small><b id="hP">—</b></div><span id="hPDot"></span></div></div>
+  <div class="r"><div class="pn"><div><small>Count</small><b id="hCnt">0-0</b></div><div id="hOuts"></div></div><div class="pn" style="flex:1.6"><div style="min-width:0"><small id="hLbl">Today</small><b id="hLine">0 H</b></div></div></div>
 </div>
-<div id="box" class="pn"></div>
+<div id="box" class="pn"><canvas id="dia" style="width:164px;height:96px;display:block"></canvas></div>
+<div id="npb" class="pn"></div>
+<div id="recb"></div>
 <div id="ctrl"><canvas id="tb"></canvas><button id="swing">SWING</button></div>
 <div id="toast"><b id="tBig"></b><span id="tSmall"></span></div>
 <div class="screen" id="sTitle"><div class="panel" id="titlePanel"></div></div>
@@ -152,7 +163,7 @@ function makeLineup(seed){const r=RNG('dab-lineup|'+seed);const order=r.shuffle(
 function choosePitch(P,b,s,r,opt){
   opt=opt||{};let m;
   if(opt.type&&opt.type!=='any'){const pt=PT[opt.type];m=P.mix.find(q=>q.t===opt.type)||{t:opt.type,mph:pt.fast?92:pt.id==='CU'?77:84,w:1,brk:1}}
-  else{let tot=0;const ws=P.mix.map(q=>{let w=q.w;const fast=PT[q.t].fast;if(s===2&&!fast)w*=1.7;if(b>s&&b>=2&&fast)w*=1.9;if(b===0&&s===0&&fast)w*=1.2;tot+=w;return w});
+  else{let tot=0;const ws=P.mix.map(q=>{let w=q.w;const fast=PT[q.t].fast;if(!fast)w*=P.brkW||1;if(s===2&&!fast)w*=1.7;if(b>s&&b>=2&&fast)w*=1.9;if(b===0&&s===0&&fast)w*=1.2;tot+=w;return w});
     let x=r()*tot,k=0;for(;k<ws.length-1;k++){x-=ws[k];if(x<0)break}m=P.mix[k]}
   const pt=PT[m.t];let mph=m.mph+r.range(-1.1,1.1);if(opt.mph)mph=opt.mph+r.range(-.5,.5);mph=+clamp(mph,68,101).toFixed(1);
   let zp=P.zone+.1*b-.09*s+(b===3?.12:0)-(s===2&&b<2?.06:0);if(opt.loc==='strikes')zp=1;else if(opt.loc==='balls')zp=0;zp=clamp(zp,opt.loc?0:.28,opt.loc?1:.9);
@@ -163,7 +174,7 @@ function choosePitch(P,b,s,r,opt){
     else{if(q<.4){x=r.range(-ZX*.9,ZX*.9);z=ZT+BR+r.range(.12,.6)}else if(q<.75){const sd=r.chance(.5)?1:-1;x=sd*(ZX+BR+r.range(.12,.55));z=r.range(ZB+.1,ZT-.1)}else{x=r.range(-ZX*.9,ZX*.9);z=ZB-BR-r.range(.12,.5)}}}
   const arm=P.hand==='R'?-1:1;
   return{t:m.t,name:pt.name,mph,x:+x.toFixed(4),z:+z.toFixed(4),hx:arm*pt.h*m.brk/12,vz:pt.v*m.brk/12,rx:arm*1.85+r.range(-.08,.08),rz:5.85+r.range(-.08,.08),
-    T:(REL_Y-CON_Y)/(mph*1.4667)*SLOW,strike:isStrike(x,z),hand:P.hand};
+    T:(REL_Y-CON_Y)/(mph*1.4667)*SLOW,strike:isStrike(x,z),hand:P.hand,nasty:P.nasty||0};
 }
 function dailyPitch(seed,P,ab,pn,b,s){return choosePitch(P,b,s,RNG('dab-p|'+seed+'|'+ab+'|'+pn+'|'+b+'|'+s))}
 /* ball position at progress u (0 = release, 1 = ideal contact point just in front of the plate) */
@@ -182,7 +193,7 @@ function swingContact(p,err,aim){
   let lf,laAim=0,spAim=0;
   if(aim){const dx=(p.x-aim.x)*12,dz=(p.z-aim.z)*12,d=Math.hypot(dx,dz);lf=d<=1.8?1:d<=6.5?1-(d-1.8)/4.7*.72:d<=8?.28-(d-6.5)/1.5*.2:0;laAim=clamp(dz*3,-30,30);spAim=clamp(dx*.6,-6,6)}
   else{const dc=Math.hypot(p.x*12,(p.z-ZC)*12);lf=1-.12*clamp(dc/10,0,1)}
-  const q=tf*of*lf;
+  const q=tf*of*lf*(1-(p.nasty||0));
   if(q<.06)return{contact:false,why:of<.1?'Chased it':aim&&lf<.1?'Missed it':'Swing and miss',lbl,err,q};
   if(q<.2)return{contact:true,tip:true,foul:true,q,ev:+(40+q*120).toFixed(1),la:60,spray:0,lbl,err};
   const pt=PT[p.t];
@@ -216,7 +227,7 @@ function battedBall(c){
   if(c.la>50&&carry<190){R.res='PO';R.f=carry<70?-2:0;return R}
   if(c.la>=14&&carry>=wallAt(c.spray)+4){R.res='HR';return R}
   if(carry<165){for(let k=0;k<4;k++){const q=pol(IFD[k][0],IFD[k][1]),d=Math.hypot(q[0]-R.lx,q[1]-R.ly),reach=7+19*Math.max(0,hang-.3);if(d<=reach){R.res=c.la<20?'LO':'PO';R.f=k;return R}}}
-  for(let k=0;k<3;k++){const q=pol(OFD[k][0],OFD[k][1]),d=Math.hypot(q[0]-R.lx,q[1]-R.ly),reach=c.la<20?4+18*Math.max(0,hang-.7):6+25*Math.max(0,hang-.5);if(d<=reach&&carry<wallAt(c.spray)+2){R.res=c.la<20?'LO':'FO';R.f=4+k;return R}}
+  for(let k=0;k<3;k++){const q=pol(OFD[k][0],OFD[k][1]),d=Math.hypot(q[0]-R.lx,q[1]-R.ly),reach=c.la<20?4+16*Math.max(0,hang-.75):5+21*Math.max(0,hang-.6);if(d<=reach&&carry<wallAt(c.spray)+2){R.res=c.la<20?'LO':'FO';R.f=4+k;return R}}
   R.res=carry<235?'1B':(carry<330||Math.abs(c.spray)<15)?'2B':'3B';return R;
 }
 const RES={'1B':{n:'Single',e:'🟩',hit:1,tb:1},'2B':{n:'Double',e:'🟦',hit:1,tb:2},'3B':{n:'Triple',e:'🟪',hit:1,tb:3},'HR':{n:'Home run',e:'🟧',hit:1,tb:4},
@@ -280,6 +291,38 @@ function themeIndexForDay(n){const L=THEMES.length;if(n>=1&&n<=L)return[0,1,2,3,
 function makeTheme(seed,idx){const base=THEMES[idx],r=RNG('dab-look|'+seed);const T=Object.assign({},base);T.name=r.pick(base.names[0])+' '+r.pick(base.names[1]);T.seed=seed;T.idx=idx;return T}
 function themeForKey(key){const n=dayNum(key);let idx=themeIndexForDay(n);const md=key.slice(5);
   if(md==='10-31')idx=6;else if((md==='10-30'||md==='11-01')&&idx===6)idx=0;else if(key.slice(5,7)==='10'&&idx===5)idx=0;return makeTheme(key,idx)}
+
+/* ---- endless inning: one fresh pitcher per plate appearance, tougher as the inning goes on ---- */
+const diffAt=n=>clamp(n/26,0,1);
+function paPitcher(seed,n){const r=RNG('dab-pa|'+seed+'|'+n),d=diffAt(n),d2=clamp(n/26,0,1.8);
+  const arch=n>=10&&r.chance(.15+.25*d)?ARCH[8]:ARCH[r.int(9)];
+  const hand=r.chance(.32)?'L':'R';const nm=r.pick(FIRST)+' '+r.pick(LAST);
+  const ramp=-4+9*d,bm=(.88+.4*d)*r.range(.93,1.07);
+  const mix=arch.mix.map(([t,mph,w])=>({t,mph:Math.round(clamp(mph+ramp+r.range(-1.2,1.2),70,100)),w,brk:+(bm*r.range(.92,1.08)).toFixed(3)}));
+  return{i:n,name:nm,hand,arch:arch.id,archName:arch.name,label:(hand==='L'?'Lefty ':'Righty ')+arch.name,mix,zone:+clamp(r.range(.52,.58)-.1*d,.42,.6).toFixed(3),brkW:+(1+1.2*d).toFixed(3),nasty:+(.16*d2).toFixed(3)}}
+function paPitch(seed,P,n,pn,b,s){return choosePitch(P,b,s,RNG('dab-p2|'+seed+'|'+n+'|'+pn+'|'+b+'|'+s))}
+/* simple, clear base running: 1B = everyone +1, 2B = +2, 3B = clears, HR = all score, BB = forced.
+   returns {runs, outs, moves:[[from,to],...] (0 = batter at home, 4 = scored, -1 = out), note} */
+function advance(st,res,bb){
+  const b=st.b,mv=[];let runs=0,note='';const occ=[];for(let k=2;k>=0;k--)if(b[k])occ.push(k+1);
+  const push=(f,t)=>{mv.push([f,t]);if(t===4)runs++};
+  const adv=n=>{for(const f of occ)push(f,Math.min(4,f+n))};
+  if(res==='HR'){adv(4);push(0,4);note=occ.length===3?'GRAND SLAM!':''}
+  else if(res==='3B'){adv(4);push(0,3)}
+  else if(res==='2B'){adv(2);push(0,2)}
+  else if(res==='1B'){adv(1);push(0,1)}
+  else if(res==='BB'){let k=1;const forced=[];while(k<=3&&b[k-1]){forced.push(k);k++}for(let i=forced.length-1;i>=0;i--)push(forced[i],forced[i]+1);for(const f of occ)if(forced.indexOf(f)<0)mv.push([f,f]);push(0,1)}
+  else if(res==='FO'){st.outs++;push(0,-1);if(st.outs<3&&b[2]&&bb&&bb.dist>=240){push(3,4);note='Sac fly';for(const f of occ)if(f!==3)mv.push([f,f])}else for(const f of occ)mv.push([f,f])}
+  else if(res==='GO'){
+    if(b[0]&&st.outs<2&&bb&&bb.ev>=82&&Math.abs(bb.spray)<30&&bb.f>=0){st.outs+=2;note='Double play';push(0,-1);push(1,-1);if(st.outs<3){for(const f of occ)if(f!==1)push(f,Math.min(4,f+1))}else for(const f of occ)if(f!==1)mv.push([f,f])}
+    else{st.outs++;push(0,-1);if(st.outs<3)adv(1);else for(const f of occ)mv.push([f,f])}}
+  else{st.outs++;push(0,-1);for(const f of occ)mv.push([f,f])}
+  b[0]=b[1]=b[2]=0;for(const m of mv)if(m[1]>=1&&m[1]<=3)b[m[1]-1]=1;
+  return{runs,moves:mv,note};
+}
+function tally2(abs){const t={PA:abs.length,AB:0,H:0,'2B':0,'3B':0,HR:0,BB:0,K:0,R:0,TB:0,maxHR:0,streak:0,bestStreak:0};
+  for(const a of abs){const r=RES[a.r];if(a.r!=='BB')t.AB++;if(r.hit){t.H++;t.TB+=r.tb;t.streak++;t.bestStreak=Math.max(t.bestStreak,t.streak)}else if(r.out)t.streak=0;
+    if(a.r==='2B')t['2B']++;if(a.r==='3B')t['3B']++;if(a.r==='HR'){t.HR++;t.maxHR=Math.max(t.maxHR,a.d||0)}if(a.r==='BB')t.BB++;if(a.r==='K')t.K++;t.R+=a.runs||0}return t}
 
 (()=>{
 const $=id=>document.getElementById(id);
@@ -429,19 +472,25 @@ function drawGuy(c,x,y,T,run){const p=proj(x,y,0),k=p[2];if(k<.15){c.fillStyle='
   c.fillStyle='#15121d';c.fillRect(p[0]-w/2,p[1]-h*.92,w,h*.5);c.fillRect(p[0]-w/2+ph*.3,p[1]-h*.45,w*.42,h*.45);c.fillRect(p[0]+w*.08-ph*.3,p[1]-h*.45,w*.42,h*.45);
   c.beginPath();c.arc(p[0],p[1]-h*.95,w*.42,0,TAU);c.fill();c.fillStyle=T.acc;c.fillRect(p[0]-w*.5,p[1]-h*1.06,w,Math.max(1,w*.3))}
 
-/* ===== Daily At-Bat: state, flow, UI, input, audio, loop ===== */
+/* ===== Daily At-Bat: one inning, bat until 3 outs — state, flow, UI, input, audio, loop ===== */
 const QS=new URLSearchParams(location.search);
 const TODAY=(()=>{const q=QS.get('date');return q&&/^\d{4}-\d\d-\d\d$/.test(q)?q:keyOfDate(new Date())})();
 const YESTERDAY=keyAdd(TODAY,-1);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const SKEY='dailyAtBat.v1';
-const SAVE=Object.assign({mute:false,aim:null,bar:'live',days:{}},LS.get(SKEY,{}));
-SAVE.stats=Object.assign({played:0,streak:0,maxStreak:0,last:'',best:null,hr:0,hits:0,ab:0},SAVE.stats||{});
-SAVE.prac=Object.assign({type:'any',mph:0,loc:'mix',hand:'R',hint:true},SAVE.prac||{});
+const SKEY='dailyAtBat.v2';
+const OLD=LS.get('dailyAtBat.v1',null)||{};
+const SAVE=Object.assign({mute:!!OLD.mute,aim:OLD.aim||null,bar:OLD.bar||'live',days:{}},LS.get(SKEY,{}));
+SAVE.stats=Object.assign({played:0,streak:0,maxStreak:0,last:''},SAVE.stats||{});
+SAVE.rec=Object.assign({bestDaily:0,bestRuns:0,longHR:0,mostHR:0,longStreak:0,careerRuns:0,careerHR:0,games:0},SAVE.rec||{});
+SAVE.prac=Object.assign({type:'any',mph:0,loc:'mix',hand:'R',hint:true},SAVE.prac||OLD.prac||{});
 if(SAVE.aim!=='auto'&&SAVE.aim!=='manual')SAVE.aim=(window.matchMedia&&matchMedia('(pointer:fine)').matches)?'manual':'auto';
 function persist(){const ks=Object.keys(SAVE.days).sort();while(ks.length>60)delete SAVE.days[ks.shift()];LS.set(SKEY,SAVE)}
 const curStreak=()=>(SAVE.stats.last===TODAY||SAVE.stats.last===YESTERDAY)?SAVE.stats.streak:0;
-function dayRec(){return SAVE.days[TODAY]||(SAVE.days[TODAY]={ab:0,pn:0,b:0,s:0,st:{outs:0,b:[0,0,0],inn:1},abs:[],pend:null,done:false})}
+const newSt=()=>({outs:0,b:[0,0,0]});
+function dayRec(){return SAVE.days[TODAY]||(SAVE.days[TODAY]={pa:0,pn:0,b:0,s:0,st:newSt(),abs:[],pend:null,done:false,rec0:null,broken:{}})}
+/* records: key, label, formatter, banner-worthy */
+const RECS=[['bestDaily','Most runs · daily',v=>v,1],['bestRuns','Most runs · all-time',v=>v,1],['longHR','Longest HR',v=>v?v+' ft':'–',1],['mostHR','Most HR in a game',v=>v,1],['longStreak','Longest hit streak',v=>v,1],['careerRuns','Career runs',v=>v,0],['careerHR','Career HR',v=>v,0]];
+
 /* ---------- audio ---------- */
 let AC=null,master=null,noiseBuf=null;
 function audio(){if(SAVE.mute)return null;try{if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.5;master.connect(AC.destination);
@@ -462,59 +511,81 @@ const SFX={
   fan:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.28,'triangle',.2,null,.15+i*.09)),
   ui:()=>tone(660,.05,'sine',.12),
 };
+SFX.score=n=>{[784,988,1175].forEach((f,i)=>tone(f*(1+.06*(n||0)),.14,'triangle',.18,null,i*.06));noise(.5,.12,1800,.6,1200,.05,.1)};
+SFX.record=()=>{[659,784,988,1319,1568].forEach((f,i)=>tone(f,.22,'square',.07,null,i*.07));[1319,1568].forEach((f,i)=>tone(f,.5,'triangle',.16,null,.4+i*.04))};
+SFX.out3=()=>{tone(392,.25,'triangle',.18);tone(330,.25,'triangle',.16,null,.18);tone(262,.5,'triangle',.16,null,.36)};
+
 /* ---------- state ---------- */
-const G={mode:'daily',seed:TODAY,lineup:null,T:null,ab:0,pn:0,b:0,s:0,st:{outs:0,b:[0,0,0],inn:1},abs:[],phase:'title',pitch:null,P:null,
+const G={mode:'daily',seed:TODAY,T:null,pa:0,pn:0,b:0,s:0,st:newSt(),abs:[],phase:'title',pitch:null,P:null,
   t0:0,tRel:0,tIdeal:0,swingT:-1,con:null,bb:null,hit:null,ev:null,nextAt:0,after:null,hudHold:false,pci:{x:0,z:ZC},time:0,
-  camA:{},camB:{},camT0:0,camDur:0,prac:{n:0,sw:0,con:0,h:0,hr:0,ev:0},lastPitch:null};
+  camA:{},camB:{},camT0:0,camDur:0,prac:{n:0,sw:0,con:0,h:0,hr:0,ev:0},rec0:null,broken:{},
+  disp:{b:[0,0,0],outs:0,R:0,streak:0},ra:null,pop:0,popN:0,over:false};
 let NOW=performance.now();
 const isDaily=()=>G.mode==='daily';
+const ranked=()=>G.mode==='daily'||G.mode==='endless';
 function setTheme(T){G.T=T;SC=buildSceneData(T);BG.key='';const R=document.documentElement.style;R.setProperty('--acc',T.acc);R.setProperty('--rim',T.rim);
   R.setProperty('--tb',`linear-gradient(135deg,${T.sky[1]}cc,${T.sky[2]}aa)`);$('bMenu').textContent=T.emoji;document.querySelector('meta[name=theme-color]').content=T.sky[0]}
 function pracPitcher(){const o=SAVE.prac,mix=o.type==='any'?PT_IDS.map(t=>({t,mph:PT[t].fast?(t==='FF'?93:t==='SI'?91:88):t==='CU'?77:t==='SL'?85:83,w:1,brk:1})):[{t:o.type,mph:PT[o.type].fast?92:o.type==='CU'?77:84,w:1,brk:1}];
   return{i:0,name:'Batting Practice',hand:o.hand,label:(o.hand==='L'?'Lefty':'Righty')+' · '+(o.type==='any'?'All pitches':PT[o.type].name),mix,zone:.55}}
+function curPitcher(){return G.mode==='practice'?pracPitcher():paPitcher(G.seed,G.pa)}
+function syncDisp(){const t=tally2(G.abs);G.disp={b:G.st.b.slice(),outs:G.st.outs,R:t.R,streak:t.streak};G.ra=null}
 /* ---------- game flow ---------- */
 function startGame(mode){
-  audio();SFX.ui();G.mode=mode;G.abs=[];G.ab=G.pn=G.b=G.s=0;G.st={outs:0,b:[0,0,0],inn:1};G.swingT=-1;G.hit=null;G.hudHold=false;
-  if(mode==='daily'){G.seed=TODAY;G.lineup=makeLineup(TODAY);setTheme(themeForKey(TODAY));const d=dayRec();
-    if(d.pend){const pd=d.pend;if(pd.ab===d.ab&&pd.pn===d.pn){const p=dailyPitch(TODAY,G.lineup[d.ab],d.ab,d.pn,d.b,d.s);loadRec(d);G.pitch=p;commit('take',null,true)}d.pend=null;persist()}
+  audio();SFX.ui();G.mode=mode;G.abs=[];G.pa=G.pn=G.b=G.s=0;G.st=newSt();G.swingT=-1;G.hit=null;G.hudHold=false;G.over=false;G.broken={};G.rec0=Object.assign({},SAVE.rec);G.pitch=null;
+  hideBanners();
+  if(mode==='daily'){G.seed=TODAY;setTheme(themeForKey(TODAY));const d=dayRec();if(!d.rec0){d.rec0=Object.assign({},SAVE.rec);persist()}G.rec0=d.rec0;G.broken=d.broken||(d.broken={});
+    if(d.pend){const pd=d.pend;if(pd.pa===d.pa&&pd.pn===d.pn&&!d.done){loadRec(d);G.P=paPitcher(TODAY,d.pa);G.pitch=paPitch(TODAY,G.P,d.pa,d.pn,d.b,d.s);commit('take',null,true)}d.pend=null;persist()}
     loadRec(dayRec())}
-  else if(mode==='random'){G.seed='R'+Date.now().toString(36)+(Math.random()*1e6|0).toString(36);G.lineup=makeLineup(G.seed);setTheme(makeTheme(G.seed,RNG('dab-rt|'+G.seed).int(THEMES.length)))}
-  else{G.seed='P';setTheme(themeForKey(TODAY));G.lineup=null;G.prac={n:0,sw:0,con:0,h:0,hr:0,ev:0}}
-  showScreen(null);$('hud').style.display='flex';$('ctrl').style.display='flex';G.phase='ready';G.nextAt=Infinity;updHUD();layout();copyCam(CAM,CAMP);camPrep();
-  if(G.ab>=9){endGame();return}
-  if(mode==='practice'){G.P=pracPitcher();toastMsg('Practice','Doesn\'t count · tap ☰ to pick pitches','',1600);G.phase='ready';G.nextAt=NOW+900;G.after=startWindup;updHUD();return}
+  else if(mode==='endless'){G.seed='E'+Date.now().toString(36)+(Math.random()*1e6|0).toString(36);setTheme(makeTheme(G.seed,RNG('dab-rt|'+G.seed).int(THEMES.length)))}
+  else{G.seed='P';setTheme(themeForKey(TODAY));G.prac={n:0,sw:0,con:0,h:0,hr:0,ev:0}}
+  syncDisp();G.P=mode==='practice'?pracPitcher():paPitcher(G.seed,G.pa);
+  showScreen(null);$('hud').style.display='flex';$('ctrl').style.display='flex';G.phase='ready';G.nextAt=Infinity;lastHUD='';updHUD();layout();copyCam(CAM,CAMP);camPrep();
+  if(mode==='daily'&&dayRec().done){endGame();return}
+  if(mode==='practice'){toastMsg('Practice','No outs, no records · tap ☰ to pick pitches','',1700);G.phase='ready';G.nextAt=NOW+900;G.after=startWindup;return}
   showCard();
 }
-function loadRec(d){G.ab=d.ab;G.pn=d.pn;G.b=d.b;G.s=d.s;G.st=JSON.parse(JSON.stringify(d.st));G.abs=d.abs.slice()}
-function saveRec(){if(!isDaily())return;const d=dayRec();d.ab=G.ab;d.pn=G.pn;d.b=G.b;d.s=G.s;d.st=JSON.parse(JSON.stringify(G.st));d.abs=G.abs.slice();persist()}
+function loadRec(d){G.pa=d.pa;G.pn=d.pn;G.b=d.b;G.s=d.s;G.st=JSON.parse(JSON.stringify(d.st));G.abs=d.abs.slice()}
+function saveRec(){if(!isDaily())return;const d=dayRec();d.pa=G.pa;d.pn=G.pn;d.b=G.b;d.s=G.s;d.st=JSON.parse(JSON.stringify(G.st));d.abs=G.abs.slice();d.broken=G.broken;persist()}
 function situation(){const b=G.st.b,on=[];if(b[0])on.push('1st');if(b[1])on.push('2nd');if(b[2])on.push('3rd');
   return G.st.outs+' out'+(G.st.outs===1?'':'s')+' · '+(on.length===3?'bases loaded':on.length?'runner'+(on.length>1?'s':'')+' on '+on.join(' & '):'bases empty')}
+function pitchList(P){return P.mix.map(m=>`<span><i style="background:${PT[m.t].col}"></i>${PT[m.t].name} ${m.mph}</span>`).join('')}
 function showCard(){
-  G.phase='card';G.P=G.lineup[G.ab];const P=G.P;updHUD();
-  const ps=P.mix.map(m=>`<span><i style="background:${PT[m.t].col}"></i>${PT[m.t].name} ${m.mph}</span>`).join('');
-  $('cardPanel').innerHTML=`<div class="sub">At-bat ${G.ab+1} of 9${isDaily()?'':' · random lineup'}</div><div class="who">${P.name}</div><div class="lbl">${P.hand==='L'?'🫲 Throws left':'🫱 Throws right'} · ${P.archName}</div>
-   <div class="pitches">${ps}</div><div class="sit">${situation()}${G.pn?` · resuming at ${G.b}-${G.s}`:''}</div>
-   <button class="btn" id="cGo">Step in ⚾</button><div class="how" style="text-align:center;margin-top:8px">Trail color tells you the pitch. Tap SWING (or space) when the marker hits the sweet spot.</div>`;
+  G.phase='card';const P=G.P;updHUD();const t=tally2(G.abs),resume=G.pa>0||G.pn>0;
+  $('cardPanel').innerHTML=`<div class="sub">${isDaily()?'Daily At-Bat #'+dayNum(TODAY):'♾️ Endless · free play'}</div><div class="who">${resume?'Back in the box':'One inning. Three outs.'}</div>
+   <div class="lbl">${resume?`Batter #${G.pa+1} · ${t.R} run${t.R===1?'':'s'} so far`:'Keep hitting until you make 3 outs. Every run counts.'}</div>
+   <div class="sit">${situation()}${G.pn?` · count ${G.b}-${G.s}`:''}</div>
+   <div class="olbl" style="margin-top:10px">${resume?'Now pitching':'Leading off against'}</div><div class="lbl" style="font-weight:800">${P.name} · ${P.label}</div><div class="pitches">${pitchList(P)}</div>
+   <button class="btn" id="cGo">${resume?'Step back in ⚾':'Play ball ⚾'}</button><div class="how" style="text-align:center;margin-top:8px">A new pitcher every batter — and they get nastier. 1B moves runners 1 base, 2B two, a triple clears the bases, a homer brings everyone in.</div>`;
   $('cGo').onclick=e=>{e.stopPropagation();stepIn()};showScreen('sCard');
 }
-function stepIn(){if(G.phase!=='card')return;SFX.ui();showScreen(null);G.phase='ready';G.nextAt=NOW+650;G.after=startWindup}
+function stepIn(){if(G.phase!=='card')return;SFX.ui();showScreen(null);G.phase='ready';G.nextAt=NOW+500;G.after=startWindup}
+function startPA(){G.P=curPitcher();lastHUD='';updHUD();
+  if(G.mode!=='practice'){const P=G.P;$('npb').innerHTML=`<small>Now pitching · batter #${G.pa+1}</small><b>${P.name}</b><span>${P.label}</span><div class="pitches">${pitchList(P)}</div>`;$('npb').classList.add('on');clearTimeout(npbT);npbT=setTimeout(()=>$('npb').classList.remove('on'),1500)}
+  G.phase='ready';G.nextAt=NOW+(G.mode==='practice'?200:950);G.after=startWindup}
+let npbT=0;
 function camTo(B,dur){copyCam(G.camA,CAM);copyCam(G.camB,B);G.camT0=NOW;G.camDur=dur}
 function nextPitch(){
   if(G.mode==='practice')return choosePitch(G.P,G.b,G.s,RNG((Math.random()*4294967296)>>>0),{type:SAVE.prac.type,mph:+SAVE.prac.mph||0,loc:SAVE.prac.loc==='mix'?'':SAVE.prac.loc});
-  if(isDaily())return dailyPitch(G.seed,G.P,G.ab,G.pn,G.b,G.s);
-  return choosePitch(G.P,G.b,G.s,RNG('dab-p|'+G.seed+'|'+G.ab+'|'+G.pn+'|'+G.b+'|'+G.s));
+  return paPitch(G.seed,G.P,G.pa,G.pn,G.b,G.s);
 }
 const WIND=1050;
 function startWindup(){
+  if(G.mode==='practice')G.P=pracPitcher();
   G.pitch=nextPitch();G.swingT=-1;G.con=null;G.bb=null;G.hit=null;G.ev=null;G.whiff=false;
   let delay=0;if(Math.abs(CAM.ph-CAMP.ph)>.001||Math.abs(CAM.F-CAMP.F)>.5){camTo(CAMP,450);delay=450}
   G.phase='windup';G.t0=NOW+delay;toastOff();updHUD();tbDirty=true;
 }
 function release(){G.phase='flight';G.tRel=G.t0+WIND;G.tIdeal=G.tRel+G.pitch.T*1000;SFX.release();
-  if(isDaily()){dayRec().pend={ab:G.ab,pn:G.pn};persist()}}
+  if(isDaily()){dayRec().pend={pa:G.pa,pn:G.pn};persist()}}
+/* records: update live after every plate appearance (daily + endless), banner when a real previous best is beaten */
+function updRecords(a,res){const R=SAVE.rec,t=tally2(G.abs),out=[];
+  R.careerRuns+=a.runs||0;if(res==='HR')R.careerHR++;
+  const set=(k,v)=>{if(v>R[k])R[k]=v;const p=G.rec0[k]||0;if(v>p&&p>0&&!G.broken[k]){G.broken[k]=1;out.push(k)}else if(v>p&&p===0)G.broken[k]=G.broken[k]||2};
+  if(isDaily())set('bestDaily',t.R);set('bestRuns',t.R);if(res==='HR')set('longHR',a.d||0);set('mostHR',t.HR);set('longStreak',t.bestStreak);
+  return out}
 /* commit = apply a pitch result to the state and save immediately (so a reload can't undo it) */
 function commit(kind,bb,silent){
-  const p=G.pitch;let ev={kind,big:'',sub:'',cls:'',abEnd:false,res:null,runs:0};
+  const p=G.pitch;let ev={kind,big:'',sub:'',cls:'',abEnd:false,res:null,runs:0,moves:null,note:'',recs:[],over:false};
   if(G.mode==='practice'){G.prac.n++;if(kind!=='take')G.prac.sw++;if(bb){G.prac.con++;G.prac.ev+=bb.ev;if(RES[bb.res]&&RES[bb.res].hit)G.prac.h++;if(bb.res==='HR')G.prac.hr++}}
   const pn=`${PT[p.t].name} · ${p.mph.toFixed(0)} mph`;
   if(kind==='take'){if(p.strike){G.s++;ev.big='Strike';ev.sub='Called · '+pn;ev.cls='k'}else{G.b++;ev.big='Ball';ev.sub=pn;ev.cls='bb'}}
@@ -522,22 +593,36 @@ function commit(kind,bb,silent){
   else if(kind==='foul'){if(G.s<2)G.s++;ev.big='Foul ball';ev.sub=(bb.kind==='tip'?'Just got a piece · ':G.con.lbl+' · ')+pn;ev.cls='out'}
   G.pn++;
   let res=null;if(kind==='inplay')res=bb.res;else if(G.b>=4)res='BB';else if(G.s>=3)res='K';
-  if(res){const look=kind==='take';const rp=runPlay(G.st,res,bb);ev.abEnd=true;ev.res=res;ev.runs=rp.runs;
-    G.abs.push({r:res,ev:bb?bb.ev:null,la:bb?bb.la:null,d:bb&&bb.kind!=='ground'?bb.dist:null,np:G.pn,p:G.ab,runs:rp.runs,pt:p.t,mph:p.mph,look:res==='K'&&look?1:0});
-    const R=RES[res];ev.big=res==='K'?(look?'Strikeout looking':'Strikeout!'):res==='HR'?'HOME RUN!':R.n+(R.hit?'!':'');ev.cls=res==='HR'?'hr':R.hit?'hit':res==='K'?'k':res==='BB'?'bb':'out';
+  if(res){const look=kind==='take';
+    if(G.mode==='practice'){const st=newSt();ev.moves=[];ev.abEnd=true;ev.res=res;G.pn=G.b=G.s=0;G.abs.push({r:res,runs:0});G.abs=G.abs.slice(-30)}
+    else{const rp=advance(G.st,res,bb);ev.abEnd=true;ev.res=res;ev.runs=rp.runs;ev.moves=rp.moves;ev.note=rp.note;
+      const a={r:res,ev:bb?+bb.ev.toFixed(1):null,la:bb?Math.round(bb.la):null,d:bb&&bb.kind!=='ground'?bb.dist:null,np:G.pn,n:G.pa,runs:rp.runs,pt:p.t,mph:Math.round(p.mph),look:res==='K'&&look?1:0,P:G.P.name};
+      G.abs.push(a);ev.recs=updRecords(a,res);G.pa++;G.pn=G.b=G.s=0;if(G.st.outs>=3){ev.over=true;G.over=true}}
+    const R=RES[res];ev.big=res==='K'?(look?'Strikeout looking':'Strikeout!'):res==='HR'?(ev.note==='GRAND SLAM!'?'GRAND SLAM!':'HOME RUN!'):R.n+(R.hit?'!':'');ev.cls=res==='HR'?'hr':R.hit?'hit':res==='K'?'k':res==='BB'?'bb':'out';
     if(bb)ev.sub=`${bb.ev.toFixed(1)} mph · ${Math.round(bb.la)}°`+(bb.kind!=='ground'?` · ${bb.dist} ft`:'');else ev.sub=res==='BB'?'Ball four · '+pn:(look?'Called strike three · ':'')+pn;
-    if(rp.runs)ev.sub+=` · ${rp.runs} run${rp.runs>1?'s':''} score${rp.runs>1?'':'s'}`;if(rp.note)ev.sub+=' · '+rp.note;
-    if(G.mode!=='practice'){G.ab++;G.pn=G.b=G.s=0}else{G.pn=G.b=G.s=0;G.abs=G.abs.slice(-30)}}
-  if(isDaily()){const d=dayRec();saveRec();d.pend=null;if(G.ab>=9&&!d.done)finishDaily(d);persist()}
-  if(!silent)G.ev=ev;return ev;
+    if(ev.runs)ev.sub+=` · ${ev.runs} run${ev.runs>1?'s':''} score${ev.runs>1?'':'s'}`;if(ev.note&&ev.note!=='GRAND SLAM!')ev.sub+=' · '+ev.note;
+    if(ranked()&&!isDaily())persist()}
+  if(isDaily()){const d=dayRec();saveRec();d.pend=null;if(G.over&&!d.done)finishGame();persist()}
+  else if(ev.over)finishGame();
+  if(!silent)G.ev=ev;else syncDisp();return ev;
 }
-function finishDaily(d){d.done=true;const t=tally(d.abs);d.pts=t.pts;const st=SAVE.stats;
-  st.streak=st.last===YESTERDAY?st.streak+1:(st.last===TODAY?st.streak:1);st.maxStreak=Math.max(st.maxStreak||0,st.streak);st.last=TODAY;st.played++;
-  st.best=st.best===null||t.pts>st.best?t.pts:st.best;st.hr+=t.HR;st.hits+=t.H;st.ab+=t.AB}
-function showEvent(){const ev=G.ev;if(!ev)return;G.hudHold=false;updHUD();toastMsg(ev.big,ev.sub,ev.cls,0);
-  if(ev.res==='HR'){SFX.cheer(true);SFX.fan();fireworks()}else if(ev.res&&RES[ev.res].hit)SFX.cheer(ev.res!=='1B');else if(ev.res==='K')SFX.ump(1);else if(ev.kind==='take')SFX.ump(G.pitch.strike);
-  const wait=ev.abEnd?(ev.res==='HR'?2600:2000):ev.kind==='foul'?1150:1050;G.phase='post';G.t0=NOW;G.nextAt=NOW+wait;
-  G.after=()=>{toastOff();if(!ev.abEnd||G.mode==='practice'){startWindup();return}if(G.ab>=9){endGame();return}showCard()}}
+function finishGame(){const R=SAVE.rec;R.games++;
+  if(isDaily()){const d=dayRec();d.done=true;d.R=tally2(d.abs).R;const st=SAVE.stats;
+    st.streak=st.last===YESTERDAY?st.streak+1:(st.last===TODAY?st.streak:1);st.maxStreak=Math.max(st.maxStreak||0,st.streak);st.last=TODAY;st.played++}
+  persist()}
+function showEvent(){const ev=G.ev;if(!ev)return;G.hudHold=false;
+  if(ev.abEnd&&ev.moves){G.disp.outs=G.st.outs;G.disp.streak=tally2(G.abs).streak;G.ra={t0:NOW,moves:ev.moves,base:G.disp.R,fired:0,dur:Math.max(450,...ev.moves.map(m=>m[1]<0?450:Math.abs(m[1]-m[0])*360))}}
+  updHUD();toastMsg(ev.big,ev.sub,ev.cls,0);
+  if(ev.res==='HR'){SFX.cheer(true);SFX.fan();fireworks(ev.note==='GRAND SLAM!'?10:4)}else if(ev.res&&RES[ev.res].hit)SFX.cheer(ev.res!=='1B');else if(ev.res==='K')SFX.ump(1);else if(ev.kind==='take')SFX.ump(G.pitch.strike);
+  if(ev.recs.length){setTimeout(()=>{if(G.phase==='title')return;showRecord(ev.recs)},ev.res==='HR'?700:350)}
+  const wait=ev.over?2300:ev.abEnd?(ev.res==='HR'?2700:ev.runs?2100:1700):ev.kind==='foul'?1100:1000;G.phase='post';G.t0=NOW;G.nextAt=NOW+wait;
+  G.after=()=>{toastOff();if(ev.over){if(G.ra){G.ra.t0=-1e9;stepRA()}SFX.out3();toastMsg('3 OUTS','Inning over · '+G.disp.R+' run'+(G.disp.R===1?'':'s'),'out',0);G.phase='post';G.t0=NOW;G.nextAt=NOW+1500;G.after=endGame;return}
+    if(!ev.abEnd){startWindup();return}if(G.ra){G.ra.t0=-1e9;stepRA()}startPA()}}
+function showRecord(keys){const L=keys.map(k=>{const r=RECS.find(x=>x[0]===k);return`<span>${r[1]}: <b>${r[2](SAVE.rec[k])}</b></span>`}).join('');
+  $('recb').innerHTML=`<i>🏆</i><b>NEW RECORD!</b>${L}`;$('recb').classList.remove('on');void $('recb').offsetWidth;$('recb').classList.add('on');SFX.record();
+  burst(V.w/2,V.top+40,40,['#ffd84a','#fff',G.T.acc],240,1.1);clearTimeout(recT);recT=setTimeout(()=>$('recb').classList.remove('on'),2800)}
+let recT=0;
+function hideBanners(){$('recb').classList.remove('on');$('npb').classList.remove('on')}
 function swing(t){
   if(G.phase!=='flight'||G.swingT>=0)return;if(t<G.tRel)t=G.tRel;
   G.swingT=t;const err=t-G.tIdeal;G.lastErr=err;tbDirty=true;
@@ -546,6 +631,12 @@ function swing(t){
   const bb=battedBall(c);G.bb=bb;const foul=bb.res==='FOUL';if(c.tip)SFX.tip();else SFX.crack(c.q);
   commit(foul?'foul':'inplay',bb);G.hudHold=true;startHit(t);
 }
+/* runner animation on the mini diamond: every runner moves together, ~360ms per base */
+function stepRA(){const ra=G.ra;if(!ra)return;const el=NOW-ra.t0;let home=0;
+  for(const m of ra.moves){if(m[1]!==4)continue;const at=Math.abs(4-m[0])*360;if(el>=at)home++}
+  if(home>ra.fired){const n=home-ra.fired;ra.fired=home;G.disp.R=ra.base+home;G.pop=NOW;G.popN=n;if(ra.t0>0){SFX.score(home);burst(diaXY().x,diaXY().y,14,[G.T.acc,'#fff'],120,.6)}}
+  if(el>=ra.dur){syncDisp();diaDirty=true}}
+
 /* ---------- batted-ball animation ---------- */
 const HP={x:0,y:0,z:0};
 function startHit(t){const bb=G.bb,p=G.pitch,u=clamp((t-G.tRel)/(p.T*1000),0,mittU(p));const c0=ballPos(p,u,{x:0,y:0,z:0});
@@ -563,23 +654,46 @@ function fielderPos(k){if(k<4)return pol(IFD[k][0],IFD[k][1]);return pol(OFD[k-4
 /* ---------- particles (screen space) ---------- */
 const PART=[];for(let i=0;i<160;i++)PART.push({life:0});
 function burst(x,y,n,cols,spd,life){let k=0;for(const p of PART){if(p.life>0)continue;const a=Math.random()*TAU,v=spd*(.3+Math.random()*.7);p.x=x;p.y=y;p.vx=Math.cos(a)*v;p.vy=Math.sin(a)*v;p.life=p.max=life*(.6+Math.random()*.4);p.col=cols[k%cols.length];p.sz=2+Math.random()*2.5;if(++k>=n)break}}
-function fireworks(){const cols=[G.T.acc,G.T.rim,'#fff','#ffd84a'];for(let i=0;i<4;i++)setTimeout(()=>{if(G.phase==='title')return;burst(V.w*(.2+Math.random()*.6),V.top+60+Math.random()*(V.h*.25),36,cols,260,1.2);SFX.crack(.3)},i*320)}
+function fireworks(n){const cols=[G.T.acc,G.T.rim,'#fff','#ffd84a'];for(let i=0;i<(n||4);i++)setTimeout(()=>{if(G.phase==='title')return;burst(V.w*(.2+Math.random()*.6),V.top+60+Math.random()*(V.h*.25),36,cols,260,1.2);SFX.crack(.3)},i*320)}
 /* ---------- HUD ---------- */
 let lastHUD='';
-function updHUD(){if(G.hudHold)return;const t=tally(G.abs),pr=G.mode==='practice';
-  const key=[G.mode,G.ab,G.b,G.s,G.st.outs,G.st.b.join(''),G.abs.length,t.R,SAVE.mute,G.P&&G.P.name,G.prac.n].join('|');if(key===lastHUD)return;lastHUD=key;
-  $('hNum').textContent=pr?'PRACTICE':G.mode==='random'?'🎲':'#'+dayNum(TODAY);
-  $('hAB').textContent=pr?'∞':Math.min(9,G.ab+1)+'/9';
-  const P=G.P;$('hP').textContent=P?(pr?P.label:P.label):'—';if(P){const sig=P.mix[Math.min(1,P.mix.length-1)].t;$('hPDot').style.background=PT[sig].col;$('hPDot').style.color=PT[sig].col}
+function updHUD(){if(G.hudHold)return;const t=tally2(G.abs),pr=G.mode==='practice';
+  const key=[G.mode,G.pa,G.b,G.s,G.disp.outs,G.abs.length,SAVE.mute,G.P&&G.P.name,G.prac.n].join('|');if(key===lastHUD)return;lastHUD=key;diaDirty=true;
+  $('hNum').textContent=pr?'PRACTICE':G.mode==='endless'?'♾️':'#'+dayNum(TODAY);
+  $('hAB').textContent=pr?'∞':'#'+(G.pa+1);
+  const P=G.P;$('hP').textContent=P?P.label:'—';$('hPn').textContent=P&&!pr?'Pitcher · '+P.name:'Pitcher';if(P){const sig=P.mix[Math.min(1,P.mix.length-1)].t;$('hPDot').style.background=PT[sig].col;$('hPDot').style.color=PT[sig].col}
   $('hCnt').innerHTML=`<span class="bb">${G.b}</span>-<span class="ss">${G.s}</span>`;
-  $('hOuts').innerHTML='<small>Outs</small>'+[0,1,2].map(i=>i<G.st.outs?'●':'○').join('');
-  $('hLine').textContent=pr?`${G.prac.h} H · ${G.prac.hr} HR · ${G.prac.sw} swings`+(G.prac.con?` · ${(G.prac.ev/G.prac.con).toFixed(0)} mph avg`:''):`${t.H}-for-${t.AB}`+(t.HR?` · ${t.HR} HR`:'')+(t.BB?` · ${t.BB} BB`:'')+` · ${t.pts} pts`;
-  $('bMute').textContent=SAVE.mute?'🔇':'🔊';drawBases();
-  $('box').innerHTML=pr?`<h4>PRACTICE</h4><table><tr><th></th><th>H</th><th>HR</th><th>SW</th></tr><tr><td>YOU</td><td>${G.prac.h}</td><td>${G.prac.hr}</td><td>${G.prac.sw}</td></tr></table>`
-   :`<h4>BOX SCORE</h4><table><tr><th>TEAM</th><th>R</th><th>H</th><th>BB</th></tr><tr><td>YOU</td><td>${t.R}</td><td>${t.H}</td><td>${t.BB}</td></tr><tr class="tot"><td>PTS</td><td></td><td></td><td>${t.pts}</td></tr></table>`;
+  $('hOuts').innerHTML=pr?'<small>Practice</small>no outs':'<small>Outs</small>'+[0,1,2].map(i=>i<G.disp.outs?'●':'○').join('');
+  $('hLbl').textContent=pr?'Practice':G.mode==='endless'?'Endless':'Today';
+  $('hLine').textContent=pr?`${G.prac.h} H · ${G.prac.hr} HR · ${G.prac.sw} swings`+(G.prac.con?` · ${(G.prac.ev/G.prac.con).toFixed(0)} mph`:''):
+    `${t.H} H · ${t.HR} HR`+(t.BB?` · ${t.BB} BB`:'')+` · best ${isDaily()?SAVE.rec.bestDaily:SAVE.rec.bestRuns}`;
+  $('bMute').textContent=SAVE.mute?'🔇':'🔊';
 }
-function drawBases(){const c=$('hBases'),g=c.getContext('2d');g.clearRect(0,0,68,60);const b=G.st.b;
-  const sq=(x,y,on)=>{g.save();g.translate(x,y);g.rotate(Math.PI/4);g.fillStyle=on?G.T.acc:'rgba(255,255,255,.18)';g.fillRect(-9,-9,18,18);g.restore()};sq(34,15,b[1]);sq(54,35,b[0]);sq(14,35,b[2])}
+/* mini diamond widget: runners (animated), out dots, big run count, hit streak */
+const dia=$('dia'),dctx=dia.getContext('2d');let diaDirty=true;const DW=164,DH=96;
+function diaXY(){const r=dia.getBoundingClientRect();return{x:r.left+r.width*.73,y:r.top+r.height*.4}}
+function drawDia(){const dpr=Math.min(2,window.devicePixelRatio||1);if(dia.width!==DW*dpr){dia.width=DW*dpr;dia.height=DH*dpr}
+  const c=dctx;c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,DW,DH);const T=G.T,pr=G.mode==='practice';
+  const cx=44,cy=50,r=29,B=[[cx,cy+r],[cx+r,cy],[cx,cy-r],[cx-r,cy],[cx,cy+r]];
+  // infield
+  c.fillStyle='rgba(255,255,255,.07)';c.beginPath();c.moveTo(B[0][0],B[0][1]);for(let i=1;i<4;i++)c.lineTo(B[i][0],B[i][1]);c.closePath();c.fill();
+  c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=1.5;c.stroke();
+  const ra=G.ra,el=ra?NOW-ra.t0:0,occ=ra?[0,0,0]:G.disp.b;
+  for(let k=1;k<=3;k++){c.save();c.translate(B[k][0],B[k][1]);c.rotate(Math.PI/4);c.fillStyle=occ[k-1]?T.acc:'rgba(255,255,255,.22)';c.fillRect(-6.5,-6.5,13,13);if(occ[k-1]){c.strokeStyle='#fff';c.lineWidth=1.5;c.strokeRect(-6.5,-6.5,13,13)}c.restore()}
+  c.fillStyle='#fff';c.beginPath();c.moveTo(cx-5,cy+r-4);c.lineTo(cx+5,cy+r-4);c.lineTo(cx+5,cy+r+1);c.lineTo(cx,cy+r+5);c.lineTo(cx-5,cy+r+1);c.closePath();c.fill();
+  const pos=v=>{v=clamp(v,0,4);const i=Math.min(3,Math.floor(v)),f=v-i;return[lerp(B[i][0],B[i+1][0],f),lerp(B[i][1],B[i+1][1],f)]};
+  if(ra){for(const m of ra.moves){let v,a=1;if(m[1]<0){v=m[0]+(m[0]===0?.45:0)*Math.min(1,el/300);a=clamp(1-el/450,0,1)}else{const d=m[1]-m[0];v=m[0]+Math.sign(d)*Math.min(Math.abs(d),el/360);if(m[1]===4&&v>=4)a=clamp(1-(el-Math.abs(d)*360)/200,0,1)}
+      if(a<=0)continue;const q=pos(v);c.globalAlpha=a;c.fillStyle=T.acc;c.strokeStyle='#fff';c.lineWidth=1.5;c.beginPath();c.arc(q[0],q[1]-1,5.2,0,TAU);c.fill();c.stroke();c.globalAlpha=1}}
+  // runs
+  const pe=clamp((NOW-G.pop)/650,0,1),sc=1+.55*(1-pe)*(1-pe);
+  c.textAlign='center';c.textBaseline='alphabetic';c.fillStyle='rgba(255,255,255,.7)';c.font='800 9.5px system-ui,sans-serif';c.fillText(pr?'HITS':'RUNS',120,13);
+  c.save();c.translate(120,47);c.scale(sc,sc);c.font='900 34px system-ui,sans-serif';c.fillStyle=pe<1?'#fff':T.acc;c.shadowColor='rgba(0,0,0,.5)';c.shadowBlur=6;c.fillText(String(pr?G.prac.h:G.disp.R),0,0);c.restore();
+  if(pe<1&&G.popN){c.globalAlpha=1-pe;c.font='900 14px system-ui,sans-serif';c.fillStyle='#ffe36a';c.fillText('+'+G.popN,146,30-pe*16);c.globalAlpha=1}
+  if(!pr){for(let i=0;i<3;i++){c.beginPath();c.arc(106+i*14,63,4.6,0,TAU);if(i<G.disp.outs){c.fillStyle='#ff6a5a';c.fill()}else{c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=1.4;c.stroke()}}
+    c.font='800 10.5px system-ui,sans-serif';c.fillStyle=G.disp.streak>=2?'#ffd06a':'rgba(255,255,255,.6)';c.fillText((G.disp.streak>=2?'🔥':'')+'Hit streak '+G.disp.streak,120,86)}
+  else{c.font='800 10.5px system-ui,sans-serif';c.fillStyle='rgba(255,255,255,.6)';c.fillText(G.prac.hr+' HR · '+G.prac.sw+' sw',120,72)}
+}
+
 /* ---------- timing bar ---------- */
 const tb=$('tb'),tbc=tb.getContext('2d');let tbDirty=true;const TB0=-300,TB1=150;
 function drawTB(){const dpr=Math.min(2,window.devicePixelRatio||1),w=tb.clientWidth,h=tb.clientHeight;if(!w)return;if(tb.width!==Math.round(w*dpr)||tb.height!==Math.round(h*dpr)){tb.width=Math.round(w*dpr);tb.height=Math.round(h*dpr)}
@@ -602,46 +716,54 @@ function toastMsg(big,small,cls,ms){const b=$('tBig');b.textContent=big;b.classN
 function toastOff(){$('toast').classList.remove('on')}
 function showScreen(id){for(const s of['sTitle','sCard','sMenu','sSum'])$(s).classList.toggle('on',s===id)}
 function fmtDate(key){return new Date(keyUTC(key)).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'})}
-function statsHTML(){const st=SAVE.stats;return`<div class="stats"><div class="stat"><b>${curStreak()}🔥</b><span>Streak</span></div><div class="stat"><b>${st.best===null?'–':st.best}</b><span>Best pts</span></div><div class="stat"><b>${st.played}</b><span>Played</span></div><div class="stat"><b>${st.hr}</b><span>Career HR</span></div></div>`}
-function lineupHTML(L,doneN){return'<div class="lineup">'+L.map((p,i)=>`<div class="${i<doneN?'done':''}"><b>${i+1}</b> ${p.name.split(' ')[1]} <span style="opacity:.6">${p.hand}HP</span><br><span style="opacity:.75">${p.archName}</span></div>`).join('')+'</div>'}
+function recHTML(broken){const R=SAVE.rec;broken=broken||{};
+  return'<div class="recs">'+RECS.map(([k,l,f])=>`<div class="${broken[k]===1?'nw':''}"><span>${l}</span><b>${f(R[k])}${broken[k]===1?' <em>NEW</em>':''}</b></div>`).join('')+`<div><span>Day streak</span><b>${curStreak()}🔥</b></div></div>`}
 function showTitle(){
-  G.phase='title';$('hud').style.display='none';$('ctrl').style.display='none';$('box').style.display='none';toastOff();
-  G.mode='daily';const T=themeForKey(TODAY);setTheme(T);const L=makeLineup(TODAY),d=dayRec();G.lineup=L;G.P=null;G.ab=d.ab;layout();copyCam(CAM,CAMP);camPrep();
+  G.phase='title';$('hud').style.display='none';$('ctrl').style.display='none';$('box').style.display='none';toastOff();hideBanners();
+  G.mode='daily';const T=themeForKey(TODAY);setTheme(T);const d=dayRec();G.P=null;G.ra=null;layout();copyCam(CAM,CAMP);camPrep();
   let main;
-  if(d.done){const t=tally(d.abs);main=`<div class="theme" style="font-size:15px">✅ Today: <b>${t.H}-for-${t.AB}</b>${t.HR?' · '+t.HR+' HR':''} · ${t.pts} pts</div><button class="btn" id="tShare">Share result 📋</button><button class="btn alt" id="tSum">See box score</button>`}
-  else if(d.ab>0||d.pn>0||d.pend)main=`<button class="btn" id="tPlay">Resume · at-bat ${Math.min(9,d.ab+1)} of 9</button>`;
-  else main=`<button class="btn" id="tPlay">Play today's 9 at-bats</button>`;
+  if(d.done){const t=tally2(d.abs);main=`<div class="theme" style="font-size:15px">✅ Today: <b>${t.R} run${t.R===1?'':'s'}</b> · ${t.HR} HR · ${t.PA} batters</div><button class="btn" id="tShare">Share result 📋</button><button class="btn alt" id="tSum">See today's inning</button>`}
+  else if(d.pa>0||d.pn>0||d.pend){const t=tally2(d.abs);main=`<button class="btn" id="tPlay">Resume · ${t.R} run${t.R===1?'':'s'}, ${d.st.outs} out${d.st.outs===1?'':'s'}</button>`}
+  else main=`<button class="btn" id="tPlay">⚾ Play today's inning</button>`;
+  const P0=paPitcher(TODAY,0);
   $('titlePanel').innerHTML=`<h1>DAILY <span>AT-BAT</span></h1><div class="sub"><b style="color:var(--acc)">#${dayNum(TODAY)}</b> · ${fmtDate(TODAY)}</div>
-   <div class="theme">${T.emoji} ${T.name}<small>${T.kind} · new pitchers &amp; ballpark every day</small></div>
-   ${main}<div class="row"><button class="btn alt" id="tPrac">🎯 Practice</button><button class="btn alt" id="tRand">🎲 New lineup</button></div>
-   <div style="font-size:11px;opacity:.55;margin-top:4px">Practice and new lineups don't count toward your daily score.</div>
-   ${statsHTML()}<div class="olbl">Today's pitchers</div>${lineupHTML(L,d.ab)}
-   <div class="how"><b>How to play:</b> 9 at-bats against today's 9 pitchers — the same for everyone. The pitch trail color shows the pitch type. Tap <b>SWING</b>, the field, or press <b>space</b> when the marker hits the sweet spot. Early = pulled, late = opposite field. Lay off pitches outside the zone: 4 balls is a walk. ${SAVE.aim==='manual'?'Move the mouse (or arrow keys) to aim the contact circle.':'Aim is automatic (change in ☰ settings).'} New lineup at midnight.</div>
+   <div class="theme">${T.emoji} ${T.name}<small>${T.kind} · one inning · bat until 3 outs</small></div>
+   ${main}<div class="row"><button class="btn alt" id="tEnd">♾️ Endless</button><button class="btn alt" id="tPrac">🎯 Practice</button></div>
+   <div style="font-size:11px;opacity:.55;margin-top:4px">Endless counts toward all-time records, not your daily run. Practice counts for nothing.</div>
+   <div class="olbl">Records</div>${recHTML()}
+   <div class="how"><b>How to play:</b> one inning against an endless line of pitchers — today's are the same for everyone, starting with ${P0.name} (${P0.label}). Keep batting until you make <b>3 outs</b>; strikeouts and caught balls are outs, 4 balls is a walk. Singles move runners one base, doubles two, triples clear the bases, homers score everyone. Pitchers get faster and nastier the longer you last. Tap <b>SWING</b>, the field, or press <b>space</b> when the marker hits the sweet spot. ${SAVE.aim==='manual'?'Move the mouse (or arrow keys) to aim the contact circle.':'Aim is automatic (change in ⚙️ settings).'} New inning at midnight.</div>
    <div class="row" style="margin-top:6px"><button class="btn alt" id="tSet">⚙️ Settings</button><button class="btn alt" id="tMute">${SAVE.mute?'🔇 Sound off':'🔊 Sound on'}</button></div>`;
   if($('tPlay'))$('tPlay').onclick=()=>startGame('daily');
-  if($('tShare'))$('tShare').onclick=()=>{loadRec(d);copyText(shareText())};
-  if($('tSum'))$('tSum').onclick=()=>{loadRec(d);G.mode='daily';showSummary()};
-  $('tPrac').onclick=()=>startGame('practice');$('tRand').onclick=()=>startGame('random');
+  if($('tShare'))$('tShare').onclick=()=>{loadRec(d);G.mode='daily';copyText(shareText())};
+  if($('tSum'))$('tSum').onclick=()=>{loadRec(d);G.mode='daily';G.broken=d.broken||{};showSummary()};
+  $('tPrac').onclick=()=>startGame('practice');$('tEnd').onclick=()=>startGame('endless');
   $('tMute').onclick=()=>{toggleMute();showTitle()};$('tSet').onclick=()=>showMenu(true);
   showScreen('sTitle');
 }
-function shareText(){const t=tally(G.abs),T=G.T;
-  const head=(isDaily()?'Daily At-Bat #'+dayNum(TODAY):'Daily At-Bat (random lineup)')+' ⚾ '+t.H+'-for-'+t.AB+(t.HR?', '+t.HR+' HR':'')+(t.BB?', '+t.BB+' BB':'');
-  return head+'\n'+G.abs.map(a=>RES[a.r].e).join('')+'\n'+T.emoji+' '+t.pts+' pts · '+t.R+' R · '+t.TB+' TB'}
-function endGame(){G.phase='summary';$('hud').style.display='none';$('ctrl').style.display='none';$('box').style.display='none';toastOff();showSummary()}
+function shareText(){const t=tally2(G.abs),T=G.T||themeForKey(TODAY);
+  const head=(isDaily()?'Daily At-Bat #'+dayNum(TODAY):'Daily At-Bat · Endless')+' ⚾ '+t.R+' run'+(t.R===1?'':'s')+' · '+t.HR+' HR · 3 outs';
+  let em=G.abs.map(a=>RES[a.r].e);if(em.length>30)em=em.slice(0,29).concat('…');
+  const extra=[T.emoji+' '+t.PA+' batters'];if(t.maxHR)extra.push('💥 '+t.maxHR+' ft');if(t.bestStreak>=2)extra.push('🔥 '+t.bestStreak+' straight hits');if(Object.values(G.broken||{}).some(v=>v===1))extra.push('🏆 new record');
+  return head+'\n'+em.join('')+'\n'+extra.join(' · ')}
+function endGame(){G.phase='summary';$('hud').style.display='none';$('ctrl').style.display='none';$('box').style.display='none';toastOff();hideBanners();showSummary()}
 function showSummary(){
-  G.phase='summary';const t=tally(G.abs),L=G.lineup||makeLineup(TODAY);
-  const rows=G.abs.map((a,i)=>{const P=L[a.p]||{name:'?'};const R=RES[a.r];return`<tr><td>${i+1}</td><td style="text-align:left">${P.name.split(' ')[1]}</td><td>${R.e} ${a.r==='K'&&a.look?'Ꝁ':a.r}</td><td style="opacity:.8">${a.ev?a.ev.toFixed(0)+' mph':'–'}</td><td style="opacity:.8">${a.d?a.d+' ft':'–'}</td><td>${a.runs?'+'+a.runs:''}</td></tr>`}).join('');
-  const msg=t.HR>=2?'Two-homer day! 💥':t.H>=4?'What a day at the plate!':t.H>=3?'Big day! 🔥':t.H>=2?'Solid day.':t.H===1?'Got one to fall.':'Tough day — tomorrow\'s a new lineup.';
-  $('sumPanel').innerHTML=`<div class="sub">${G.T.emoji} ${G.T.name}${isDaily()?' · #'+dayNum(TODAY):' · random lineup'}</div><h1 style="font-size:50px;margin-top:6px">${t.H}-for-${t.AB}</h1><div style="font-size:18px;font-weight:800;margin-top:4px">${t.pts} pts · ${msg}</div>
-   <table class="bs"><tr><th>AB</th><th>H</th><th>2B</th><th>3B</th><th>HR</th><th>BB</th><th>K</th><th>R</th><th>TB</th></tr><tr style="font-weight:800"><td>${t.AB}</td><td>${t.H}</td><td>${t['2B']}</td><td>${t['3B']}</td><td>${t.HR}</td><td>${t.BB}</td><td>${t.K}</td><td>${t.R}</td><td>${t.TB}</td></tr></table>
-   <table class="bs"><tr><th>#</th><th style="text-align:left">Pitcher</th><th>Result</th><th>EV</th><th>Dist</th><th>R</th></tr>${rows}</table>
+  G.phase='summary';const t=tally2(G.abs);
+  const rows=G.abs.map((a,i)=>{const R=RES[a.r];return`<tr><td>${i+1}</td><td style="text-align:left">${(a.P||'?').split(' ')[1]||'?'}</td><td>${R.e} ${a.r==='K'&&a.look?'Ꝁ':a.r}</td><td style="opacity:.8">${a.ev?Math.round(a.ev)+' mph':'–'}</td><td style="opacity:.8">${a.d?a.d+' ft':'–'}</td><td>${a.runs?'+'+a.runs:''}</td></tr>`}).join('');
+  const msg=t.R>=10?'Absolute onslaught! 💥':t.R>=6?'Big inning! 🔥':t.R>=3?'Nice rally.':t.R>=1?'Got on the board.':'Shut out — '+(isDaily()?'new inning tomorrow.':'run it back!');
+  const anyNew=Object.values(G.broken||{}).some(v=>v===1);
+  $('sumPanel').innerHTML=`<div class="sub">${G.T.emoji} ${G.T.name}${isDaily()?' · #'+dayNum(TODAY):' · ♾️ Endless'}</div>
+   <h1 style="font-size:56px;margin-top:6px;line-height:1">${t.R} <span style="font-size:26px">RUN${t.R===1?'':'S'}</span></h1><div style="font-size:16px;font-weight:800;margin-top:4px">${msg}</div>
+   ${anyNew?'<div class="newrec">🏆 NEW RECORD!</div>':''}
+   <table class="bs"><tr><th>PA</th><th>H</th><th>2B</th><th>3B</th><th>HR</th><th>BB</th><th>K</th><th>R</th><th>TB</th></tr><tr style="font-weight:800"><td>${t.PA}</td><td>${t.H}</td><td>${t['2B']}</td><td>${t['3B']}</td><td>${t.HR}</td><td>${t.BB}</td><td>${t.K}</td><td>${t.R}</td><td>${t.TB}</td></tr></table>
    <pre class="share">${shareText()}</pre><button class="btn" id="sShare">Share 📋</button>
-   ${isDaily()?statsHTML()+'<div class="sub">New lineup at midnight.</div>':''}
-   <div class="row"><button class="btn alt" id="sPrac">🎯 Practice</button><button class="btn alt" id="sRand">🎲 New lineup</button></div><button class="btn alt" id="sMenu">Main menu</button>`;
-  $('sShare').onclick=()=>copyText(shareText());$('sPrac').onclick=()=>startGame('practice');$('sRand').onclick=()=>startGame('random');$('sMenu').onclick=showTitle;
+   <div class="olbl">Records</div>${recHTML(G.broken)}
+   <div class="olbl">Plate appearances</div><div class="palog"><table class="bs"><tr><th>#</th><th style="text-align:left">Pitcher</th><th>Result</th><th>EV</th><th>Dist</th><th>R</th></tr>${rows}</table></div>
+   ${isDaily()?'<div class="sub" style="margin-top:6px">New inning at midnight.</div>':''}
+   <div class="row"><button class="btn alt" id="sEnd">♾️ Endless</button><button class="btn alt" id="sPrac">🎯 Practice</button></div><button class="btn alt" id="sMenu">Main menu</button>`;
+  $('sShare').onclick=()=>copyText(shareText());$('sPrac').onclick=()=>startGame('practice');$('sEnd').onclick=()=>startGame('endless');$('sMenu').onclick=showTitle;
   showScreen('sSum');
 }
+
 function opts(id,list,cur){return`<div class="opt" id="${id}">`+list.map(([v,l])=>`<button data-v="${v}" class="${String(v)===String(cur)?'on':''}">${l}</button>`).join('')+'</div>'}
 let menuFromTitle=false;
 function showMenu(fromTitle){
@@ -656,7 +778,7 @@ function showMenu(fromTitle){
    <div class="olbl">Aim</div>${opts('oAim',[['auto','Auto (timing only)'],['manual','Manual contact circle']],SAVE.aim)}
    <div class="olbl">Timing bar</div>${opts('oBar',[['live','Live marker'],['pro','Pro (marker after swing)']],SAVE.bar)}
    <div class="how">Manual aim: move the mouse over the zone, use arrow keys/WASD, or drag on the field (touch). Put the circle on the ball — under it lifts it, over it hits it on the ground.</div>
-   <button class="btn" id="mBack">${fromTitle?'Done':'Back to the game'}</button>${fromTitle?'':`<button class="btn alt" id="mMute">${SAVE.mute?'🔇 Sound off':'🔊 Sound on'}</button><button class="btn alt" id="mHome">Main menu${isDaily()?' (progress saved)':''}</button>`}`;
+   <button class="btn" id="mBack">${fromTitle?'Done':'Back to the game'}</button>${fromTitle?'':`<button class="btn alt" id="mMute">${SAVE.mute?'🔇 Sound off':'🔊 Sound on'}</button><button class="btn alt" id="mHome">Main menu${isDaily()?' (progress saved)':G.mode==='endless'?' (ends this run)':''}</button>`}`;
   const bind=(id,fn)=>{const el=$(id);if(!el)return;el.onclick=e=>{const v=e.target.dataset&&e.target.dataset.v;if(v===undefined)return;fn(v);persist();for(const b of el.children)b.classList.toggle('on',b.dataset.v===v);SFX.ui()}};
   bind('oType',v=>SAVE.prac.type=v);bind('oMph',v=>SAVE.prac.mph=+v);bind('oLoc',v=>SAVE.prac.loc=v);bind('oHand',v=>SAVE.prac.hand=v);bind('oHint',v=>SAVE.prac.hint=v==='1');
   bind('oAim',v=>{SAVE.aim=v;G.pci.x=0;G.pci.z=ZC});bind('oBar',v=>SAVE.bar=v);
@@ -678,7 +800,8 @@ function layout(){V.w=innerWidth;V.h=innerHeight;V.dpr=Math.min(window.devicePix
   const cw=Math.round(V.w*V.dpr),ch=Math.round(V.h*V.dpr);if(cv.width!==cw||cv.height!==ch){cv.width=cw;cv.height=ch}
   layoutCams();if(!G.camDur||NOW-G.camT0>G.camDur){copyCam(CAM,G.phase==='hit'||(G.phase==='post'&&G.hit&&G.hit.dur)?CAMH:CAMP)}camPrep();BG.key='';tbDirty=true;
   document.documentElement.style.setProperty('--ty',Math.round(V.top+(V.h-V.top-V.bot)*.16+44)+'px');
-  const box=$('box');if(play&&G.phase!=='title'){box.style.display='block';box.style.bottom=(V.bot+6)+'px';const zr=CAMP.cx+CAMP.F*ZX/12.5;box.style.display=(V.w-10-box.offsetWidth<zr+12)?'none':'block'}else box.style.display='none'}
+  const box=$('box');if(play){box.style.display='block';const zr=CAMP.cx+CAMP.F*(ZX+.9)/(CON_Y-CAMP.y),bw=box.offsetWidth,bh=box.offsetHeight,zb=CAMP.cy+CAMP.F*(CAMP.z-ZB+.4)/(CON_Y-CAMP.y);
+    if(V.w-10-bw>=zr+8||V.h-V.bot-6-bh>zb){box.style.top='';box.style.bottom=(V.bot+6)+'px'}else{box.style.bottom='';box.style.top=(V.top+4)+'px'}}else box.style.display='none';diaDirty=true}
 let resizePending=0;addEventListener('resize',()=>{resizePending=performance.now()+120});
 /* ---------- input ---------- */
 function evTime(e){const n=performance.now();return e&&e.timeStamp>n-250&&e.timeStamp<=n+1?e.timeStamp:n}
@@ -707,6 +830,7 @@ const BP={x:0,y:0,z:0},BQ={x:0,y:0,z:0};
 function update(dt){
   G.time+=dt;
   if(SAVE.aim==='manual'){const v=1.6*dt;if(KEYS.arrowleft||KEYS.a)G.pci.x-=v;if(KEYS.arrowright||KEYS.d)G.pci.x+=v;if(KEYS.arrowup||KEYS.w)G.pci.z+=v;if(KEYS.arrowdown||KEYS.s)G.pci.z-=v;G.pci.x=clamp(G.pci.x,-ZX-1,ZX+1);G.pci.z=clamp(G.pci.z,ZB-1,ZT+1)}
+  if(G.ra)stepRA();
   if(G.phase==='ready'&&NOW>=G.nextAt){G.after()}
   else if(G.phase==='windup'){if(NOW>=G.t0+WIND)release()}
   else if(G.phase==='flight'){
@@ -775,14 +899,14 @@ function frame(now){
   update(dt);
   if(G.phase!=='title'&&G.phase!=='summary'||SC){render()}
   if(tbDirty||G.phase==='flight'||G.phase==='windup'){drawTB();tbDirty=G.phase==='flight'}
+  if(G.phase!=='title'&&G.phase!=='summary'&&(diaDirty||G.ra||NOW-G.pop<700)){drawDia();diaDirty=false}
   const work=performance.now()-w0,i=PERF.n%900;PERF.work[i]=work;PERF.intv[i]=dt*1000;PERF.n++;
   if(G.phase==='flight'||G.phase==='hit'){if(work>12||dt>.024)slow++;else if(slow>0)slow-=.25}if(slow>45&&DPRCAP>1){DPRCAP=1;slow=0;layout()}
 }
 document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(rafId);rafId=0;if(AC&&AC.state==='running')AC.suspend()}else if(!rafId){last=performance.now();rafId=requestAnimationFrame(frame);if(AC&&!SAVE.mute)AC.resume()}});
 setInterval(()=>{if(G.phase==='title'&&keyOfDate(new Date())!==TODAY&&!QS.get('date'))location.reload()},30000);
-window.DAB={G,SAVE,TODAY,PERF,TEST,V,CAM,CAMP,CAMH,makeLineup,dailyPitch,swingContact,battedBall,themeForKey,dayNum,startGame,showTitle,shareText,stepIn,act,swing,tally,layout,dayRec,get NOW(){return NOW}};
+window.DAB={G,SAVE,TODAY,PERF,TEST,V,CAM,CAMP,CAMH,paPitcher,paPitch,advance,swingContact,battedBall,themeForKey,dayNum,startGame,showTitle,shareText,stepIn,act,swing,tally2,layout,dayRec,persist,showRecord,get NOW(){return NOW}};
 ballSpr=makeBallSprite();showTitle();rafId=requestAnimationFrame(frame);
-
 })();
 </script>
 </body>
